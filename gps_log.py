@@ -52,14 +52,19 @@ if __name__ == '__main__':
 
                 #save point to kml object
                 if (float(gps.latitude) != 0):
+                    print(gpsParsed)
                     log.write(gpsParsed + "\n")
                     coordTuple = (float(gps.latitude), float(gps.longitude), float(gps.altitude))
                     trk.newgxcoord(coordTuple)
                     trk.newwhen(now)
                     kml.save(fileName + ".kml")
+                else:
+                    print("GPS lock not obtained. Clear line of sight to sky required.")
 
                 #write the data to the file
                 time.sleep(0.1)
+            elif data.find(b"G") == 0:
+                print("Connection to GPS module not found. Try restarting the Raspberry Pi.")
 
         #when ctrl-c is pressed
         except KeyboardInterrupt:
