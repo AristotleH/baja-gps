@@ -37,13 +37,18 @@ if __name__ == '__main__':
             #read a line of data from the serial input
             data = uartSerial.readline()
 
+            #save current UTC date and time
+            current = datetime.utcnow()
+
             #if the string of data containing gps data is found
             if data.find(b"GGA") > 0:
                 #parse the byte type as a string into gps data variables
                 gps = pynmea2.parse(data.decode("utf-8"))
 
+                now = current.strftime("UTC: %H:%M:%S, ")
+
                 #create string to log in text file and print to console
-                gpsParsed = "LAT: " + str(gps.latitude) + ", LON: " + str(gps.longitude)
+                gpsParsed = now + "LAT: " + str(gps.latitude) + ", LON: " + str(gps.longitude)
                 gpsParsed += ", ALT: " + str(gps.altitude) + " " + str(gps.altitude_units)
 
                 #save information if GPS lock is obtained
@@ -58,7 +63,6 @@ if __name__ == '__main__':
                     coordTuple = (float(gps.latitude), float(gps.longitude), float(gps.altitude))
 
                     #save current time in kml-compatible string
-                    current = datetime.utcnow()
                     now = current.strftime("%Y-%m-%dT%H:%M:%SZ")
 
                     #save coordinate data and time in kml document
@@ -68,12 +72,14 @@ if __name__ == '__main__':
                     #save updates to document or create new document if needed
                     kml.save(fileName + ".kml")
                 else:
-                    print("GPS lock not obtained. Clear line of sight to sky required.")
+                    now = current.strftime("UTC: %H:%M:%S, ")
+                    print(now + "GPS lock not obtained. Clear line of sight to sky required.")
 
                 #write the data to the file
                 time.sleep(0.1)
             elif data.find(b"G") == 0:
-                print("Connection to GPS module not found. Try restarting the Raspberry Pi.")
+                now = current.strftime("UTC: %H:%M:%S, ")
+                print("Connection to GPS module not found. Try restarting the Raspberry Pi." + now)
 
         #when ctrl-c is pressed
         except KeyboardInterrupt:
