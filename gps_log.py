@@ -20,11 +20,8 @@ if __name__ == '__main__':
     kml = simplekml.Kml(name=current.strftime("%Y-%m-%d_%H-%M-%S_gpsLog"), open=1)
     doc = kml.newdocument(name='baja gps')
 
-
-    all_coords = []
-    all_times = []
-
     fol = doc.newfolder(name='Tracks')
+    trk = fol.newgxtrack(name=current.strftime("%Y-%m-%d_%H-%M-%S"))
 
     while True:
         try:
@@ -37,7 +34,7 @@ if __name__ == '__main__':
                 gps = pynmea2.parse(data.decode("utf-8"))
 
                 gpsParsed = "LAT: " + str(gps.latitude) + ", LON: " + str(gps.longitude)
-                gpsParsed += "; Alt: " + str(gps.altitude) + " " + str(gps.altitude_units)
+                gpsParsed += ", ALT: " + str(gps.altitude) + " " + str(gps.altitude_units)
                 #print the data
                 print(gpsParsed)
 
@@ -46,24 +43,21 @@ if __name__ == '__main__':
 
                 #save point to kml object
                 if (float(gps.latitude) != 0):
-                    coordTuple = (float(gps.latitude), float(gps.longitude), float(gps.altitude))
                     log.write(gpsParsed + "\n")
-                    all_coords.append( (float(gps.latitude), float(gps.longitude), float(gps.altitude)) )
-                    all_times.append(now)
+                    coordTuple = (float(gps.latitude), float(gps.longitude), float(gps.altitude))
+                    trk.newgxcoord(coordTuple)
+                    trk.newwhen(now)
+                    kml.save(fileName + ".kml")
 
                 #write the data to the file
-                time.sleep(1)
+                time.sleep(0.1)
 
         #when ctrl-c is pressed
         except KeyboardInterrupt:
-            current = datetime.utcnow()
-            trk = fol.newgxtrack(name=current.strftime("%Y-%m-%d_%H-%M-%S"))
-
             trk.newwhen(all_times)
             trk.newgxcoord(all_coords)
 
             #get current time, write logging end time, and stop script
             log.write("END_LOG: " + current.strftime("%Y-%m-%d_%H-%M-%S"))
-            kml.save(fileName + ".kml")
             print("\nStopping script!")
             exit()
