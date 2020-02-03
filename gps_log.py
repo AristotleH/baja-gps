@@ -23,6 +23,15 @@ if __name__ == '__main__':
     fol = doc.newfolder(name='Tracks')
     trk = fol.newgxtrack(name=current.strftime("%Y-%m-%d_%H-%M-%S"))
 
+    #from simplekml documentation
+    trk.stylemap.normalstyle.iconstyle.icon.href = 'http://earth.google.com/images/kml-icons/track-directional/track-0.png'
+    trk.stylemap.normalstyle.linestyle.color = '99ffac59'
+    trk.stylemap.normalstyle.linestyle.width = 6
+    trk.stylemap.highlightstyle.iconstyle.icon.href = 'http://earth.google.com/images/kml-icons/track-directional/track-0.png'
+    trk.stylemap.highlightstyle.iconstyle.scale = 1.2
+    trk.stylemap.highlightstyle.linestyle.color = '99ffac59'
+    trk.stylemap.highlightstyle.linestyle.width = 8
+
     while True:
         try:
             #read a line of data from the serial input
