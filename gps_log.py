@@ -23,7 +23,7 @@ if __name__ == '__main__':
     fol = doc.newfolder(name='Tracks')
     trk = fol.newgxtrack(name=current.strftime("%Y-%m-%d_%H-%M-%S"))
 
-    #from simplekml documentation
+    #from simplekml documentation - kml styling
     trk.stylemap.normalstyle.iconstyle.icon.href = 'http://earth.google.com/images/kml-icons/track-directional/track-0.png'
     trk.stylemap.normalstyle.linestyle.color = '99ffac59'
     trk.stylemap.normalstyle.linestyle.width = 6
@@ -42,21 +42,30 @@ if __name__ == '__main__':
                 #parse the byte type as a string into gps data variables
                 gps = pynmea2.parse(data.decode("utf-8"))
 
+                #create string to log in text file and print to console
                 gpsParsed = "LAT: " + str(gps.latitude) + ", LON: " + str(gps.longitude)
                 gpsParsed += ", ALT: " + str(gps.altitude) + " " + str(gps.altitude_units)
-                #print the data
-                print(gpsParsed)
 
-                current = datetime.utcnow()
-                now = current.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-                #save point to kml object
+                #save information if GPS lock is obtained
                 if (float(gps.latitude) != 0):
+                    #print information to console
                     print(gpsParsed)
+
+                    #save information to text file
                     log.write(gpsParsed + "\n")
+
+                    #create tuple of coordinate data
                     coordTuple = (float(gps.latitude), float(gps.longitude), float(gps.altitude))
+
+                    #save current time in kml-compatible string
+                    current = datetime.utcnow()
+                    now = current.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+                    #save coordinate data and time in kml document
                     trk.newgxcoord(coordTuple)
                     trk.newwhen(now)
+
+                    #save updates to document or create new document if needed
                     kml.save(fileName + ".kml")
                 else:
                     print("GPS lock not obtained. Clear line of sight to sky required.")
