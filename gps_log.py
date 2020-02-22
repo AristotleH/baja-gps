@@ -65,9 +65,9 @@ if __name__ == '__main__':
                     #save current time in kml-compatible string
                     now = current.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-                    #save coordinate data and time in kml document
-                    trk.newgxcoord(coordTuple)
-                    trk.newwhen(now)
+                    #save coordinate data (needs to be in list of a tuple)
+                    #and time in kml document
+                    trk.newdata([coordTuple], now)
 
                     #save updates to document or create new document if needed
                     kml.save(fileName + ".kml")
@@ -83,9 +83,6 @@ if __name__ == '__main__':
 
         #when ctrl-c is pressed
         except KeyboardInterrupt:
-            trk.newwhen(all_times)
-            trk.newgxcoord(all_coords)
-
             #get current time, write logging end time, and stop script
             log.write("END_LOG: " + current.strftime("%Y-%m-%d_%H-%M-%S"))
             print("\nStopping script!")
